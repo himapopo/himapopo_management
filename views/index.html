@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+  <title>Document</title>
+</head>
+<body>
+  <div class="container my-5">
+    <div class="row">
+      <div class="col-12 text-center"><h1>過去の記録</h1></div>
+      <div class="col-12"><a href="/home">トップに戻る</a></div>
+      <form action="/sort/" class="col-12 mt-4">
+        <div class="row">
+          <div class="col-4">
+          <select name="year" class="form-control">
+            <option value="2020">2020年</option>
+          </select>
+        </div>
+        <div class="col-4">
+          <select name="time" class="form-control">
+              <option value="1">1月</option>
+              <option value="2">2月</option>
+              <option value="3">3月</option>
+              <option value="4">4月</option>
+              <option value="5">5月</option>
+              <option value="6">6月</option>
+              <option value="7">7月</option>
+              <option value="8">8月</option>
+              <option value="9">9月</option>
+              <option value="10">10月</option>
+              <option value="11">11月</option>
+              <option value="12">12月</option>
+          </select>
+        </div>
+        <div class="col-4">
+          <input type="submit" value="並び替え" class="btn btn-outline-primary">
+        </div>
+      </div>
+      </form>
+    </div>
+
+    <div class="row">
+      <div class="col-6 text-center mt-3"><h3 class="border-bottom pb-1">ひま</h3></div>
+      <div class="col-6 text-center mt-3"><h3 class="border-bottom pb-1">ぽぽ</h3></div>
+      {{ range .}}
+      <div class="col-6">
+        <div class="row my-3 shadow-sm mx-1 py-1">
+          <div class="col-12 mt-1 border-bottom pb-1">
+            <span>体重：{{.Weight}}g</span>
+          </div>
+          <div class="col-12 mt-1 border-bottom pb-1">
+            <span>シード：{{.Seed}}g</span>
+          </div>
+          <div class="col-12 mt-1 border-bottom pb-1">
+            <span>ペレット：{{.Pellet}}g</span>
+          </div>
+          <div class="col-12 mt-1 pb-1">
+            <span>メモ：{{.Memo}}</span>
+          </div>
+          <div class="col-6 mt-1">
+            <a href="/edit/{{.Id}}">編集</a>
+          </div>
+          <div class="col-6 mt-1 d-flex justify-content-end">
+            <span class="text-secondary">{{.Created_datetime}}</span>
+          </div>
+        </div>
+      </div>
+      {{end}}
+    </div>
+  </div>
+</body>
+</html>
