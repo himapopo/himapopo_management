@@ -7,22 +7,30 @@
   <title>ひまぽぽ管理</title>
 </head>
 <body>
+  <style>
+    body {
+      background-image: url("../images/okame1.png");
+      background-size: 30%;
+      background-position:center right;
+      background-repeat:  no-repeat;
+    }
+  </style>
   <div class="container my-5">
     <div class="row">
       <div class="col-12 text-center my-2"><h1>記録編集</h1></div>
       <div class="col-12"><a href="/home/">トップに戻る</a></div>
-      <form action="/update/{{.Id}}" method="post" class="d-flex">
+      <form action="/update/{{.Id}}" method="POST" class="d-flex">
         <div class="col-6 mx-auto my-3">
           <div class="row">
-            <div class="col-12"><h3 class="border-bottom pb-2 text-center">ぽぽ</h3></div>
+            <div class="col-12"><h3 class="border-bottom pb-2 text-center">{{.Name}}</h3></div>
             <div class="col-12"><h5>体重</h5></div>
-            <div class="col-12"><input type="text" name="p_weight" class="form-control my-1"></div>
+            <div class="col-12"><input type="text" name="weight" value="{{.Weight}}" class="form-control my-1"></div>
             <div class="col-12"><h5>シード</h5></div>
-            <div class="col-12"><input type="text" name="p_seed" class="form-control my-1"></div>
+            <div class="col-12"><input type="text" name="seed" value="{{.Seed}}" class="form-control my-1"></div>
             <div class="col-12"><h5>ペレット</h5></div>
-            <div class="col-12"><input type="text" name="p_pellet" class="form-control my-1"></div>
+            <div class="col-12"><input type="text" name="pellet" value="{{.Pellet}}" class="form-control my-1"></div>
             <div class="col-12"><h5>メモ</h5></div>
-            <div class="col-12"><textarea type="text" name="p_memo" class="form-control my-1"></textarea></div>
+            <div class="col-12"><textarea type="text" name="memo" class="form-control my-1">{{.Memo}}</textarea></div>
           </div>
           <div class="col-12 mt-5"><input type="submit" value="編集する"></div>
         </div>

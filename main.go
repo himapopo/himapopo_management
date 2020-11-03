@@ -6,6 +6,8 @@ import (
 	"database/sql"
 	"log"
 	"fmt"
+	"strconv"
+	"time"
 	_"github.com/mattn/go-sqlite3"
 )
 
@@ -24,8 +26,43 @@ type Management struct{
 
 //ホーム画面
 func homeHandler(write http.ResponseWriter, request *http.Request){
+	tm := time.Now()
+	y := tm.Year()
+	m := int(tm.Month())
+	d := tm.Day()
+	var dd string
+	if d < 10{
+		dd = strconv.Itoa(d)
+		dd = "0" + dd 
+	} else {
+		dd = strconv.Itoa(d)
+	}
+	yy := strconv.Itoa(y)
+	mo := strconv.Itoa(m)
+	datatime := yy + "-" + mo + "-" + dd
+	Dbconnection, err := sql.Open("sqlite3", "./himapopo.sql")
+	if err != nil {
+		fmt.Println(err)
+		log.Fatalln(err)
+	}
+	defer Dbconnection.Close()
+	cmd := "SELECT * FROM management WHERE created_datetime LIKE ? ORDER BY id desc"
+	rows, err := Dbconnection.Query(cmd, "%"+datatime+"%")
+	if err != nil {
+		log.Println(err)
+	}
+	defer rows.Close()
+	var mm []Management
+	for rows.Next(){
+		var m Management
+		err = rows.Scan(&m.Id, &m.Name, &m.Weight, &m.Seed, &m.Pellet, &m.Memo, &m.Created_datetime)
+		if err != nil {
+			log.Println(err)
+		} 
+		mm = append(mm,m)
+	}
 	t := template.Must(template.ParseFiles("views/home.html"))
-	t.ExecuteTemplate(write, "home.html", nil)
+	t.ExecuteTemplate(write, "home.html", mm)
 }
 
 //データ作成ページ
@@ -76,7 +113,7 @@ func indexHandler(write http.ResponseWriter, request *http.Request){
 	}
 	defer Dbconnection.Close()
 	
-	cmd := "SELECT * FROM management"
+	cmd := "SELECT * FROM management ORDER BY id desc"
 	rows, err := Dbconnection.Query(cmd)
 	if err != nil {
 		log.Println(err)
@@ -97,12 +134,43 @@ func indexHandler(write http.ResponseWriter, request *http.Request){
 } 
 
 // アップデート
-
+func updateHandler(write http.ResponseWriter, request *http.Request){
+	mgm := request.URL.Path[len("/update/"):]
+	intmgm,_ := strconv.Atoi(mgm)
+	wei := request.FormValue("weight")
+	see := request.FormValue("seed")
+	pel := request.FormValue("pellet")
+	me := request.FormValue("memo")
+	Dbconnection, err := sql.Open("sqlite3", "./himapopo.sql")
+	if err != nil {
+		log.Println(err)
+	}
+	defer Dbconnection.Close()
+	cmd := "UPDATE management SET weight = ?, seed = ?, pellet = ?, memo = ? WHERE id = ?"
+	_, err = Dbconnection.Exec(cmd, wei, see, pel, me, intmgm)
+	if err != nil {
+		log.Println(err)
+	}
+	http.Redirect(write, request, "/home/", http.StatusFound)
+}
 
 // 編集ページ
 func editHandler(write http.ResponseWriter, request *http.Request){
+	mgm := request.URL.Path[len("/edit/"):]
+	intmgm,_ := strconv.Atoi(mgm)
+	Dbconnection, _ := sql.Open("sqlite3", "./himapopo.sql")
+	defer Dbconnection.Close()
+	cmd := "SELECT * FROM management WHERE id = ?"
+	row := Dbconnection.QueryRow(cmd,intmgm)
+	var m Management
+	err := row.Scan(&m.Id, &m.Name, &m.Weight, &m.Seed, &m.Pellet, &m.Memo, &m.Created_datetime)
+	if err != sql.ErrNoRows{
+		log.Println("no rows!!!")
+	} else {
+		log.Println(err)
+	}
 	t := template.Must(template.ParseFiles("views/edit.html"))
-	t.ExecuteTemplate(write, "edit.html", nil)
+	t.ExecuteTemplate(write, "edit.html", m)
 }
 
 
@@ -126,7 +194,8 @@ func main(){
 		fmt.Println(err)
 		log.Fatalln(err)
 	}
-	//http.HandleFunc("/update/", updateHandler)
+	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("images/"))))
+	http.HandleFunc("/update/", updateHandler)
 	http.HandleFunc("/edit/", editHandler)
 	http.HandleFunc("/index/", indexHandler)
 	http.HandleFunc("/create/", createHandler)
