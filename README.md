@@ -1,5 +1,5 @@
 # インコの体調記録アプリ
-<img width="1440" alt="スクリーンショット 2020-11-03 19 53 58" src="https://user-images.githubusercontent.com/62779514/97976816-8e420980-1e0e-11eb-8c2c-02b82d08e364.png">
+<img width="1440" alt="スクリーンショット 2020-11-03 21 00 46" src="https://user-images.githubusercontent.com/62779514/97982881-c26df800-1e17-11eb-8c2e-2591c7b5a6da.png">
 
 Go言語の学習の中で作成した飼っているインコの『体調記録アプリ』です。<br>
 Goの学習中にインコが体調を崩したこともあり、実際に使うために作成しました<br>
