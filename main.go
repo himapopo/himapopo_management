@@ -1,45 +1,44 @@
 package main
 
 import (
-	"net/http"
-	"html/template"
 	"database/sql"
-	"log"
 	"fmt"
+	"html/template"
+	"log"
+	"net/http"
 	"strconv"
 	"time"
-	
-	_"github.com/mattn/go-sqlite3"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var Dbconnection *sql.DB
 
-type Management struct{
-	Id                  int
+type Management struct {
+	Id               int
 	Name             string
-	Weight              int
-	Seed                int
-	Pellet              int
+	Weight           int
+	Seed             int
+	Pellet           int
 	Memo             string
 	Created_datetime string
-
 }
 
 //ホーム画面
-func homeHandler(write http.ResponseWriter, request *http.Request){
+func homeHandler(write http.ResponseWriter, request *http.Request) {
 	tm := time.Now()
 	y := tm.Year()
 	m := int(tm.Month())
 	d := tm.Day()
 	var dd string
-	if d < 10{
+	if d < 10 {
 		dd = strconv.Itoa(d)
-		dd = "0" + dd 
+		dd = "0" + dd
 	} else {
 		dd = strconv.Itoa(d)
 	}
 	var mo string
-	if m < 10{
+	if m < 10 {
 		mo = strconv.Itoa(m)
 		mo = "0" + mo
 	} else {
@@ -60,27 +59,26 @@ func homeHandler(write http.ResponseWriter, request *http.Request){
 	}
 	defer rows.Close()
 	var mm []Management
-	for rows.Next(){
+	for rows.Next() {
 		var m Management
 		err = rows.Scan(&m.Id, &m.Name, &m.Weight, &m.Seed, &m.Pellet, &m.Memo, &m.Created_datetime)
 		if err != nil {
 			log.Println(err)
-		} 
-		mm = append(mm,m)
+		}
+		mm = append(mm, m)
 	}
 	t := template.Must(template.ParseFiles("views/home.html"))
 	t.ExecuteTemplate(write, "home.html", mm)
 }
 
 //データ作成ページ
-func newHandler(write http.ResponseWriter, request *http.Request){
+func newHandler(write http.ResponseWriter, request *http.Request) {
 	t := template.Must(template.ParseFiles("views/new.html"))
 	t.ExecuteTemplate(write, "new.html", nil)
 }
 
-
 //データ記録
-func createHandler(write http.ResponseWriter, request *http.Request){
+func createHandler(write http.ResponseWriter, request *http.Request) {
 	h_weight := request.FormValue("h_weight")
 	h_seed := request.FormValue("h_seed")
 	h_pellet := request.FormValue("h_pellet")
@@ -110,16 +108,15 @@ func createHandler(write http.ResponseWriter, request *http.Request){
 	http.Redirect(write, request, "/home/", http.StatusFound)
 }
 
-
 //一覧表示
-func indexHandler(write http.ResponseWriter, request *http.Request){
+func indexHandler(write http.ResponseWriter, request *http.Request) {
 	Dbconnection, err := sql.Open("sqlite3", "./himapopo.sql")
 	if err != nil {
 		fmt.Println(err)
 		log.Fatalln(err)
 	}
 	defer Dbconnection.Close()
-	
+
 	cmd := "SELECT * FROM management ORDER BY id desc LIMIT 30"
 	rows, err := Dbconnection.Query(cmd)
 	if err != nil {
@@ -127,20 +124,20 @@ func indexHandler(write http.ResponseWriter, request *http.Request){
 	}
 	defer rows.Close()
 	var mm []Management
-	for rows.Next(){
+	for rows.Next() {
 		var m Management
 		err = rows.Scan(&m.Id, &m.Name, &m.Weight, &m.Seed, &m.Pellet, &m.Memo, &m.Created_datetime)
 		if err != nil {
 			log.Println(err)
-		} 
-		mm = append(mm,m)
+		}
+		mm = append(mm, m)
 	}
 
 	t := template.Must(template.ParseFiles("views/index.html"))
-	t.ExecuteTemplate(write, "index.html",mm)
-} 
+	t.ExecuteTemplate(write, "index.html", mm)
+}
 
-func sortHandler(write http.ResponseWriter, request *http.Request){
+func sortHandler(write http.ResponseWriter, request *http.Request) {
 	year := request.FormValue("year")
 	time := request.FormValue("time")
 	datatime := year + "-" + time
@@ -150,7 +147,7 @@ func sortHandler(write http.ResponseWriter, request *http.Request){
 		log.Fatalln(err)
 	}
 	defer Dbconnection.Close()
-	
+
 	cmd := "SELECT * FROM management WHERE created_datetime LIKE ? ORDER BY id desc"
 	rows, err := Dbconnection.Query(cmd, "%"+datatime+"%")
 	if err != nil {
@@ -158,23 +155,23 @@ func sortHandler(write http.ResponseWriter, request *http.Request){
 	}
 	defer rows.Close()
 	var mm []Management
-	for rows.Next(){
+	for rows.Next() {
 		var m Management
 		err = rows.Scan(&m.Id, &m.Name, &m.Weight, &m.Seed, &m.Pellet, &m.Memo, &m.Created_datetime)
 		if err != nil {
 			log.Println(err)
-		} 
-		mm = append(mm,m)
+		}
+		mm = append(mm, m)
 	}
 
 	t := template.Must(template.ParseFiles("views/sort.html"))
-	t.ExecuteTemplate(write, "sort.html",mm)
-} 
+	t.ExecuteTemplate(write, "sort.html", mm)
+}
 
 // アップデート
-func updateHandler(write http.ResponseWriter, request *http.Request){
+func updateHandler(write http.ResponseWriter, request *http.Request) {
 	mgm := request.URL.Path[len("/update/"):]
-	intmgm,_ := strconv.Atoi(mgm)
+	intmgm, _ := strconv.Atoi(mgm)
 	wei := request.FormValue("weight")
 	see := request.FormValue("seed")
 	pel := request.FormValue("pellet")
@@ -193,16 +190,16 @@ func updateHandler(write http.ResponseWriter, request *http.Request){
 }
 
 // 編集ページ
-func editHandler(write http.ResponseWriter, request *http.Request){
+func editHandler(write http.ResponseWriter, request *http.Request) {
 	mgm := request.URL.Path[len("/edit/"):]
-	intmgm,_ := strconv.Atoi(mgm)
+	intmgm, _ := strconv.Atoi(mgm)
 	Dbconnection, _ := sql.Open("sqlite3", "./himapopo.sql")
 	defer Dbconnection.Close()
 	cmd := "SELECT * FROM management WHERE id = ?"
-	row := Dbconnection.QueryRow(cmd,intmgm)
+	row := Dbconnection.QueryRow(cmd, intmgm)
 	var m Management
 	err := row.Scan(&m.Id, &m.Name, &m.Weight, &m.Seed, &m.Pellet, &m.Memo, &m.Created_datetime)
-	if err != sql.ErrNoRows{
+	if err != sql.ErrNoRows {
 		log.Println("no rows!!!")
 	} else {
 		log.Println(err)
@@ -211,14 +208,13 @@ func editHandler(write http.ResponseWriter, request *http.Request){
 	t.ExecuteTemplate(write, "edit.html", m)
 }
 
-
-func main(){
+func main() {
 	Dbconnection, err := sql.Open("sqlite3", "./himapopo.sql")
 	if err != nil {
 		log.Fatalln(err)
 	}
 	defer Dbconnection.Close()
-	cmd :=`CREATE TABLE IF NOT EXISTS management(id INTEGER PRIMARY KEY,
+	cmd := `CREATE TABLE IF NOT EXISTS management(id INTEGER PRIMARY KEY,
 																							            name STRING,
 																							             weight INT,
 																							               seed INT, 
@@ -238,5 +234,6 @@ func main(){
 	http.HandleFunc("/create/", createHandler)
 	http.HandleFunc("/new/", newHandler)
 	http.HandleFunc("/home/", homeHandler)
+	http.HandleFunc("/", homeHandler)
 	http.ListenAndServe(":8000", nil)
 }
