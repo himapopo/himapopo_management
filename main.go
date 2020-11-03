@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"strconv"
 	"time"
+	
 	_"github.com/mattn/go-sqlite3"
 )
 
@@ -37,8 +38,14 @@ func homeHandler(write http.ResponseWriter, request *http.Request){
 	} else {
 		dd = strconv.Itoa(d)
 	}
+	var mo string
+	if m < 10{
+		mo = strconv.Itoa(m)
+		mo = "0" + mo
+	} else {
+		mo = strconv.Itoa(m)
+	}
 	yy := strconv.Itoa(y)
-	mo := strconv.Itoa(m)
 	datatime := yy + "-" + mo + "-" + dd
 	Dbconnection, err := sql.Open("sqlite3", "./himapopo.sql")
 	if err != nil {
@@ -113,7 +120,7 @@ func indexHandler(write http.ResponseWriter, request *http.Request){
 	}
 	defer Dbconnection.Close()
 	
-	cmd := "SELECT * FROM management ORDER BY id desc"
+	cmd := "SELECT * FROM management ORDER BY id desc LIMIT 30"
 	rows, err := Dbconnection.Query(cmd)
 	if err != nil {
 		log.Println(err)
@@ -131,6 +138,37 @@ func indexHandler(write http.ResponseWriter, request *http.Request){
 
 	t := template.Must(template.ParseFiles("views/index.html"))
 	t.ExecuteTemplate(write, "index.html",mm)
+} 
+
+func sortHandler(write http.ResponseWriter, request *http.Request){
+	year := request.FormValue("year")
+	time := request.FormValue("time")
+	datatime := year + "-" + time
+	Dbconnection, err := sql.Open("sqlite3", "./himapopo.sql")
+	if err != nil {
+		fmt.Println(err)
+		log.Fatalln(err)
+	}
+	defer Dbconnection.Close()
+	
+	cmd := "SELECT * FROM management WHERE created_datetime LIKE ? ORDER BY id desc"
+	rows, err := Dbconnection.Query(cmd, "%"+datatime+"%")
+	if err != nil {
+		log.Println(err)
+	}
+	defer rows.Close()
+	var mm []Management
+	for rows.Next(){
+		var m Management
+		err = rows.Scan(&m.Id, &m.Name, &m.Weight, &m.Seed, &m.Pellet, &m.Memo, &m.Created_datetime)
+		if err != nil {
+			log.Println(err)
+		} 
+		mm = append(mm,m)
+	}
+
+	t := template.Must(template.ParseFiles("views/sort.html"))
+	t.ExecuteTemplate(write, "sort.html",mm)
 } 
 
 // アップデート
@@ -177,23 +215,22 @@ func editHandler(write http.ResponseWriter, request *http.Request){
 func main(){
 	Dbconnection, err := sql.Open("sqlite3", "./himapopo.sql")
 	if err != nil {
-		fmt.Println(err)
 		log.Fatalln(err)
 	}
 	defer Dbconnection.Close()
 	cmd :=`CREATE TABLE IF NOT EXISTS management(id INTEGER PRIMARY KEY,
-																							 name STRING,
-																							 weight INT,
-																							 seed INT, 
-																							 pellet INT, 
-																							 memo STRING,
-																							 created_datetime STRING DEFAULT (datetime('now','localtime'))
+																							            name STRING,
+																							             weight INT,
+																							               seed INT, 
+																							             pellet INT, 
+																							            memo STRING,
+					 created_datetime STRING DEFAULT (datetime('now','localtime'))
 																							 )`
 	_, err = Dbconnection.Exec(cmd)
 	if err != nil {
-		fmt.Println(err)
 		log.Fatalln(err)
 	}
+	http.HandleFunc("/sort/", sortHandler)
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("images/"))))
 	http.HandleFunc("/update/", updateHandler)
 	http.HandleFunc("/edit/", editHandler)

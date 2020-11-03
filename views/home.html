@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 
-  <title>Document</title>
+  <title>ひまぽぽ管理アプリ</title>
 </head>
 <body>
 
@@ -18,32 +18,37 @@
   }
 
   .top-image{
-    width: 40px;
-    height: 40px;
+    width: 60px;
+    height: 60px;
+  }
+
+  .top-content{
+    background-color: white;
+    opacity: 0.7;
   }
 </style>
   <div class="container my-4">
     <div class="row">
-      <div class="col-12 text-center my-4"><h1 class="text-white">ひまぽぽ管理アプリ</h1></div>
-      <div class="col-8 mx-auto my-3"><a href="/new" class="btn btn-success btn-lg btn-block">記録する</a></div>
-      <div class="col-8 mx-auto my-3"><a href="/index" class="btn btn-secondary btn-lg btn-block">過去の記録</a></div>
+      <div class="col-12 text-center my-3"><h1 class="text-warning">ひまぽぽ管理アプリ</h1></div>
+      <div class="col-7 mx-auto my-3"><a href="/new" class="btn btn-success btn-lg btn-block">記録する</a></div>
+      <div class="col-7 mx-auto my-3"><a href="/index" class="btn btn-secondary btn-lg btn-block">過去の記録</a></div>
     </div>
     <div class="row">
       {{if .}}
-      <div class="col-12 text-center mt-3"><h2 class="text-info">今日の記録</h2></div>
+      <div class="col-12 text-center mt-3"><h2 class="text-white">今日の記録</h2></div>
       {{ range .}}
       <div class="col-6">
-        <div class="row border my-1 mx-1 px-1">
-          <div class="col-12 border-bottom py-1 text-center"><h4 class="text-primary">{{.Name}}</h4></div>
+        <div class="row shadow top-content my-1 mx-1 px-1">
+          <div class="col-12 border-bottom py-1"><h4>{{.Name}}</h4></div>
           <div class="col-12 my-1 py-1 border-bottom"><h5>体重：{{.Weight}}g</h5></div>
-          <div class="col-12 my-1 pb-1 border-bottom"><h5>シード：{{.Weight}}g</h5></div>
+          <div class="col-12 my-1 pb-1 border-bottom"><h5>シード：{{.Seed}}g</h5></div>
           <div class="col-12 my-1 pb-1 border-bottom"><h5>ペレット：{{.Pellet}}g</h5></div>
-          <div class="col-12 my-1 pb-1"><h5>メモ：{{.Memo}}g</h5></div>
+          <div class="col-12 my-1 pb-1"><h5>メモ：{{.Memo}}</h5></div>
         </div>
       </div>
       {{end}}
       {{else}}
-      <div class="col-12 text-center mt-5"><h5 class="text-white d-inline-block">今日の記録がないよ...</h5><img src="../images/okame4.png" class="top-image mb-2"></div>
+      <div class="col-12 text-center mt-5"><h3 class="text-white d-inline-block">今日の記録がないよ...</h3><img src="../images/okame4.png" class="top-image mb-2"></div>
       {{end}}
     </div>
   </div>
