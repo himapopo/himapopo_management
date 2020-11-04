@@ -34,7 +34,8 @@
       <div class="col-6">
         <div class="row shadow top-content my-1 mx-1 px-1">
           <div class="col-12 border-bottom py-1"><h4 class="text-warning">{{.Name}}</h4></div>
-          <div class="col-12 my-1 py-1 border-bottom"><h5>体重：{{.Weight}}g</h5></div>
+          <div class="col-12 my-1 py-1 border-bottom"><h5 class="d-inline-block">体重：{{.Weight}}g<span class="text-primary ml-5">{{.WeightDifference}}g</span></h5>
+          </div>
           <div class="col-12 my-1 pb-1 border-bottom"><h5>シード：{{.Seed}}g</h5></div>
           <div class="col-12 my-1 pb-1 border-bottom"><h5>ペレット：{{.Pellet}}g</h5></div>
           <div class="col-12 my-1 pb-1"><h5>メモ：{{.Memo}}</h5></div>

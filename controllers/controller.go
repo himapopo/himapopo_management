@@ -24,6 +24,37 @@ type Management struct {
 	Created_datetime string
 }
 
+var weights []int
+
+func (m Management)WeightDifference() string{
+	num := m.Id
+	num2 := num - 2
+	Dbconnection, err := sql.Open("sqlite3", "./himapopo.sql")
+	if err != nil {
+		fmt.Println(err)
+		log.Fatalln(err)
+	}
+	defer Dbconnection.Close()
+	cmd := "SELECT * FROM management WHERE id = ?"
+	row := Dbconnection.QueryRow(cmd, num2)
+	var mgm Management
+	err = row.Scan(&mgm.Id, &mgm.Name, &mgm.Weight, &mgm.Seed, &mgm.Pellet, &mgm.Memo, &mgm.Created_datetime)
+	if err != sql.ErrNoRows {
+		log.Println("no rows!!!")
+	} else {
+		log.Println(err)
+	}
+	var strdif string
+	var dif int =  m.Weight - mgm.Weight
+	if dif >= 1 {
+		strdif = strconv.Itoa(dif)
+		strdif = "+" + strdif
+	} else {
+		strdif = strconv.Itoa(dif)
+	}
+	return strdif
+}
+
 //ホーム画面
 func HomeHandler(write http.ResponseWriter, request *http.Request) {
 	tm := time.Now()
@@ -212,7 +243,7 @@ func EditHandler(write http.ResponseWriter, request *http.Request) {
 //データ削除
 func DeleteHandler(write http.ResponseWriter, request *http.Request){
 	mgm := request.URL.Path[len("/delete/"):]
-	intmgm, _ := strconv.Atoi(mgm)
+	intmgm,_ := strconv.Atoi(mgm)
 	var intmgm2 int
 	if intmgm % 2 == 0{
 		intmgm2 = intmgm - 1
