@@ -67,13 +67,13 @@ func HomeHandler(write http.ResponseWriter, request *http.Request) {
 		}
 		mm = append(mm, m)
 	}
-	t := template.Must(template.ParseFiles("views/home.html"))
+	t := template.Must(template.ParseFiles("views/home.html","views/_header.html"))
 	t.ExecuteTemplate(write, "home.html", mm)
 }
 
 //データ作成ページ
 func NewHandler(write http.ResponseWriter, request *http.Request) {
-	t := template.Must(template.ParseFiles("views/new.html"))
+	t := template.Must(template.ParseFiles("views/new.html","views/_header.html"))
 	t.ExecuteTemplate(write, "new.html", nil)
 }
 
@@ -133,7 +133,7 @@ func IndexHandler(write http.ResponseWriter, request *http.Request) {
 		mm = append(mm, m)
 	}
 
-	t := template.Must(template.ParseFiles("views/index.html"))
+	t := template.Must(template.ParseFiles("views/index.html","views/_header.html"))
 	t.ExecuteTemplate(write, "index.html", mm)
 }
 
@@ -165,7 +165,7 @@ func SortHandler(write http.ResponseWriter, request *http.Request) {
 		mm = append(mm, m)
 	}
 
-	t := template.Must(template.ParseFiles("views/sort.html"))
+	t := template.Must(template.ParseFiles("views/sort.html","views/_header.html"))
 	t.ExecuteTemplate(write, "sort.html", mm)
 }
 
@@ -205,6 +205,6 @@ func EditHandler(write http.ResponseWriter, request *http.Request) {
 	} else {
 		log.Println(err)
 	}
-	t := template.Must(template.ParseFiles("views/edit.html"))
-	t.ExecuteTemplate(write, "edit.html", m)
+	t,_:= template.ParseFiles("views/edit.html","views/_header.html")
+	t.Execute(write, m)
 }
