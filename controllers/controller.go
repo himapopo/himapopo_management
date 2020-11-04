@@ -26,6 +26,7 @@ type Management struct {
 
 var weights []int
 
+// 前日との体重差分表示
 func (m Management)WeightDifference() string{
 	num := m.Id
 	num2 := num - 2
