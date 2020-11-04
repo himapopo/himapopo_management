@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	http.HandleFunc("/delete/", controllers.DeleteHandler)
 	http.HandleFunc("/sort/", controllers.SortHandler)
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("images/"))))
 	http.HandleFunc("/update/", controllers.UpdateHandler)

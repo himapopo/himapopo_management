@@ -208,3 +208,28 @@ func EditHandler(write http.ResponseWriter, request *http.Request) {
 	t,_:= template.ParseFiles("views/edit.html","views/_header.html")
 	t.Execute(write, m)
 }
+
+//データ削除
+func DeleteHandler(write http.ResponseWriter, request *http.Request){
+	mgm := request.URL.Path[len("/delete/"):]
+	intmgm, _ := strconv.Atoi(mgm)
+	var intmgm2 int
+	if intmgm % 2 == 0{
+		intmgm2 = intmgm - 1
+	} else {
+		intmgm2 = intmgm + 1 
+	}
+	Dbconnection, _ := sql.Open("sqlite3", "./himapopo.sql")
+	defer Dbconnection.Close()
+	cmd := "DELETE FROM management WHERE id = ?"
+	_, err := Dbconnection.Exec(cmd, intmgm)
+	if err != nil{
+		log.Fatalln(err)
+	}
+	cmd2 := "DELETE FROM management WHERE id = ?"
+	_, err = Dbconnection.Exec(cmd2, intmgm2)
+	if err != nil{
+		log.Fatalln(err)
+	}
+	http.Redirect(write, request, "/index/", http.StatusFound)
+}
